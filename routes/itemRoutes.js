@@ -13,18 +13,18 @@ const router = new express.Router();
  *  {added: {name: "popsicle", price: 1.45}}
 */
 router.get("/:name", function (req, res) {
-    const itemName = req.params.name;
-    console.log(itemName);
-    console.log(items);
-    const item = items.filter(item => item.name === itemName)[0];
+  const itemName = req.params.name;
+  console.log(itemName);
+  console.log(items);
+  const item = items.filter(item => item.name === itemName)[0]; //findIndex - succeed fast
 
-    console.log(item);
+  console.log(item);
 
-    if (item !== undefined) {
-        return res.json(item);
-    } else {
-        throw new NotFoundError();
-    }
+  if (item !== undefined) {
+    return res.json(item);
+  } else {
+    throw new NotFoundError();
+  }
 });
 
 
@@ -37,7 +37,7 @@ router.get("/:name", function (req, res) {
         }
 */
 router.get("", function (req, res) {
-    return res.json({ items });
+  return res.json({ items });
 });
 
 
@@ -48,9 +48,9 @@ router.get("", function (req, res) {
  *  {added: {name: "popsicle", price: 1.45}}
 */
 router.post("", checkForBody, function (req, res) {
-    const newItem = req.body;
-    items.push(newItem);
-    return res.json({ added: newItem });
+  const newItem = req.body;
+  items.push(newItem);
+  return res.json({ added: newItem });
 });
 
 
@@ -63,18 +63,19 @@ router.post("", checkForBody, function (req, res) {
  *  {updated: {name: "new popsicle", price: 2.45}}
 */
 router.patch("/:name", checkForBody, function (req, res) {
-    const itemEdits = req.body;
-    const itemName = req.params.name;
-    const item = items.filter(item => item.name === itemName)[0];
+  const itemEdits = req.body;
+  const itemName = req.params.name;
+  const item = items.filter(item => item.name === itemName)[0];
 
-    if (item !== undefined) {
-        item['name'] = itemEdits['name'] || item['name'];
-        item['price'] = itemEdits['price'] || item['price'];
+  if (item !== undefined) {
+    item['name'] = itemEdits['name'] || item['name'];
+    item['price'] = itemEdits['price'] || item['price'];
+    item.price = 'price' in itemEdits ? itemEdits.price : item.price;
 
-        return res.json({ updated: item });
-    } else {
-        throw new NotFoundError();
-    }
+    return res.json({ updated: item });
+  } else {
+    throw new NotFoundError();
+  }
 });
 
 /** Delete item from shopping list
@@ -84,16 +85,16 @@ router.patch("/:name", checkForBody, function (req, res) {
  *  {message: "Deleted"}
 */
 router.delete("/:name", function (req, res) {
-    const itemName = req.params.name;
-    const itemIdx = items.findIndex(item => item.name === itemName);
+  const itemName = req.params.name;
+  const itemIdx = items.findIndex(item => item.name === itemName);
 
-    if (itemIdx === - 1) {
-        throw new NotFoundError();
-    }
+  if (itemIdx === - 1) { // copy this above
+    throw new NotFoundError();
+  }
 
-    items.splice(itemIdx, 1);
+  items.splice(itemIdx, 1);
 
-    return res.json({ message: "Deleted" });
+  return res.json({ message: "Deleted" });
 });
 
 export default router;

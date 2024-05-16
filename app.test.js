@@ -28,8 +28,10 @@ describe('GET /items', function () {
     };
     expect(resp.body).toEqual(itemsAnswer);
   });
-  test('invalid', async function () {
-    //TODO:fill out
+  test('reponds with 200', async function () {
+    const resp = await request(app).get("/items");
+
+    expect(resp.statusCode).toEqual(200);
   });
 });
 
@@ -38,8 +40,11 @@ describe('GET /items/:name', function () {
     const resp = await request(app).get(`/items/${testItem}`);
     expect(resp.body).toEqual({ name: "milk", price: 5 });
   });
-  test('invalid', async function () {
-    //TODO:fill out
+
+  test('GET invalid item', async function () {
+    const resp = await request(app).get(`/items/lollypops`);
+
+    expect(resp.statusCode).toEqual(404);
   });
 });
 
@@ -56,8 +61,31 @@ describe('PATCH /items/:name', function () {
     expect(updatedItemIdx).not.toEqual(-1);
 
   });
-  test('invalid', async function () {
-    //TODO:fill out
+  test('PATCH item that does not exist', async function () {
+    const resp = await request(app)
+      .patch(`/items/lollypops`)
+      .send({
+        name: 'popsicle'
+      });
+    expect(resp.statusCode).toEqual(404);
+
+  });
+
+  test('PATCH existing item with bad value does not change item', async function () {
+    const resp = await request(app)
+      .patch(`/items/eggs`)
+      .send({
+        color: 'orange'
+      });
+
+    expect(resp.body).toEqual({ updated: { name: 'eggs', price: 3 } });
+  });
+
+  test('PATCH item without body', async function () {
+    const resp = await request(app)
+      .patch(`/items/eggs`);
+
+    expect(resp.statusCode).toEqual(400);
   });
 });
 
@@ -73,7 +101,9 @@ describe('DELETE /items/:name', function () {
     expect(updatedItemIdx).toEqual(-1);
 
   });
-  test('invalid', async function () {
-    //TODO:fill out
+  test('DELETE item that does not exist', async function () {
+    const resp = await request(app).delete(`/items/apples`);
+
+    expect(resp.statusCode).toEqual(404);
   });
 });
